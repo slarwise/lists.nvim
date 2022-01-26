@@ -102,4 +102,61 @@ M.command_to_args = function(cmd)
     end
 end
 
+M.on_choice_edit = function(item)
+    if not item then
+        return
+    end
+    vim.cmd(string.format("edit %s", item))
+end
+
+M.on_choice_split = function(item)
+    if not item then
+        return
+    end
+    vim.cmd(string.format("split %s", item))
+end
+
+M.on_choice_vsplit = function(item)
+    if not item then
+        return
+    end
+    vim.cmd(string.format("vsplit %s", item))
+end
+
+M.on_choice_arg_edit = function(item, idx)
+    if not item then
+        return
+    end
+    vim.cmd(string.format("argument %d", idx))
+end
+
+M.on_choice_arg_split = function(item, idx)
+    if not item then
+        return
+    end
+    vim.cmd(string.format("sargument %d", idx))
+end
+
+M.on_choice_arg_vsplit = function(item, idx)
+    if not item then
+        return
+    end
+    vim.cmd(string.format("vertical sargument %d", idx))
+end
+
+M.select_arg = function()
+    local args = M.args()
+    vim.ui.select(args, { prompt = "Args" }, M.on_choice_arg_edit)
+end
+
+M.select_cwd = function()
+    local files = M.cwd()
+    vim.ui.select(files, { prompt = "Current directory" }, M.on_choice_edit)
+end
+
+M.select_buf_dir = function()
+    local files = M.buf_dir()
+    vim.ui.select(files, { prompt = "Directory of buffer" }, M.on_choice_edit)
+end
+
 return M
