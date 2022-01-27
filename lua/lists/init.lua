@@ -15,12 +15,16 @@ end
 
 M.buf_dir = function()
     local buffer_name = vim.api.nvim_buf_get_name(0)
+    buffer_name = vim.fn.fnamemodify(buffer_name, ":~:.")
     if buffer_name == "" then
         vim.notify "No buffer open"
         return
     end
-    local buffer_dir = vim.fn.fnamemodify(buffer_name, ":h")
-    return vim.fn.readdir(buffer_dir)
+    local buf_dir = vim.fn.fnamemodify(buffer_name, ":h")
+    local files = vim.fn.readdir(buf_dir)
+    return vim.tbl_map(function(f)
+        return string.format("%s/%s", buf_dir, f)
+    end, files)
 end
 
 M.buf_dir_to_quickfix = function()
