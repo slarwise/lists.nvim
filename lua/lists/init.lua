@@ -163,4 +163,12 @@ M.select_buf_dir = function()
     vim.ui.select(files, { prompt = "Directory of buffer" }, M.on_choice_edit)
 end
 
+M.select_from_dir = function(dir)
+    local files = vim.fn.readdir(dir)
+    files = vim.tbl_map(function(f)
+        return string.format("%s/%s", dir, f)
+    end, files)
+    vim.ui.select(files, { prompt = "Dir" }, M.on_choice_edit)
+end
+
 return M
