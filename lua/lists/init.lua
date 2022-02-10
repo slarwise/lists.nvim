@@ -171,4 +171,17 @@ M.select_from_dir = function(dir)
     vim.ui.select(files, { prompt = "Dir" }, M.on_choice_edit)
 end
 
+M.select_and_run_linter = function()
+    local lint = require "lint"
+    local filetype = vim.bo.ft
+    local linters = lint.linters_by_ft [filetype]
+    local on_choice = function(item)
+        if not item then
+            return
+        end
+        lint.try_lint(item)
+    end
+    vim.ui.select(linters, { prompt = "Linters" }, on_choice)
+end
+
 return M
