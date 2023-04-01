@@ -52,6 +52,14 @@ M.cwd_to_quickfix = function()
     end
 end
 
+M.interesting_dirs = function()
+    local home_dir = os.getenv("HOME")
+    local file = assert(io.open(string.format("%s/interesting-dirs", home_dir), "rb"))
+    local text = file:read("*a")
+    dirs = vim.split(text, "\n", { trimempty = true })
+    return dirs
+end
+
 M.cwd_to_args = function()
     local filenames = M.cwd()
     if filenames then
@@ -147,6 +155,16 @@ M.on_choice_arg_vsplit = function(item, idx)
     vim.cmd(string.format("vertical sargument %d", idx))
 end
 
+M.on_choice_find_files = function(item, idx)
+    if not item then return end
+    require 'telescope.builtin'.find_files({ search_dirs = { item }})
+end
+
+M.on_choice_grep = function(item, idx)
+    if not item then return end
+    require 'telescope.builtin'.live_grep({ search_dirs = { item }})
+end
+
 M.select_arg = function()
     local args = M.args()
     vim.ui.select(args, { prompt = "Args" }, M.on_choice_arg_edit)
@@ -176,6 +194,16 @@ M.select_from_dir = function(dir)
         return string.format("%s/%s", dir, f)
     end, files)
     vim.ui.select(files, { prompt = "Dir" }, M.on_choice_edit)
+end
+
+M.select_interesting_dir_and_find_files = function()
+    local dirs = M.interesting_dirs()
+    vim.ui.select(dirs, { prompt = "Interesting dirs" }, M.on_choice_find_files)
+end
+
+M.select_interesting_dir_and_grep = function()
+    local dirs = M.interesting_dirs()
+    vim.ui.select(dirs, { prompt = "Interesting dirs" }, M.on_choice_grep)
 end
 
 M.select_and_run_linter = function()
