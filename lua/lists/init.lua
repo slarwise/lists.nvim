@@ -15,16 +15,15 @@ end
 
 M.buf_dir = function()
     local buffer_name = vim.api.nvim_buf_get_name(0)
-    buffer_name = vim.fn.fnamemodify(buffer_name, ":~:.")
     if buffer_name == "" then
-        vim.notify "No buffer open"
         return
     end
-    local buf_dir = vim.fn.fnamemodify(buffer_name, ":h")
-    local files = vim.fn.readdir(buf_dir)
-    return vim.tbl_map(function(f)
-        return string.format("%s/%s", buf_dir, f)
-    end, files)
+    local dir = vim.fs.dirname(buffer_name)
+    local filenames = {}
+    for name, type in vim.fs.dir(dir) do
+        table.insert(filenames, string.format("%s/%s", dir, name))
+    end
+    return filenames
 end
 
 M.buf_dir_to_quickfix = function()
@@ -160,7 +159,15 @@ end
 
 M.select_buf_dir = function()
     local files = M.buf_dir()
-    vim.ui.select(files, { prompt = "Directory of buffer" }, M.on_choice_edit)
+    if not files then
+        vim.notify("No buffer open")
+        return
+    end
+    local dirname = vim.fs.dirname(files[1])
+    vim.ui.select(files, {
+        prompt = dirname,
+        format_item = function(item) return vim.fs.basename(item) end
+    }, M.on_choice_edit)
 end
 
 M.select_from_dir = function(dir)
