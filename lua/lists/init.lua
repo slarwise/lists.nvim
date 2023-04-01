@@ -165,6 +165,12 @@ M.on_choice_grep = function(item, idx)
     require 'telescope.builtin'.live_grep({ search_dirs = { item }})
 end
 
+M.on_choice_cd = function(item, idx)
+    if not item then return end
+    vim.api.nvim_set_current_dir(item)
+    vim.notify(string.format("Current directory: %s", item))
+end
+
 M.select_arg = function()
     local args = M.args()
     vim.ui.select(args, { prompt = "Args" }, M.on_choice_arg_edit)
@@ -198,12 +204,17 @@ end
 
 M.select_interesting_dir_and_find_files = function()
     local dirs = M.interesting_dirs()
-    vim.ui.select(dirs, { prompt = "Interesting dirs" }, M.on_choice_find_files)
+    vim.ui.select(dirs, { prompt = "Find files in" }, M.on_choice_find_files)
 end
 
 M.select_interesting_dir_and_grep = function()
     local dirs = M.interesting_dirs()
-    vim.ui.select(dirs, { prompt = "Interesting dirs" }, M.on_choice_grep)
+    vim.ui.select(dirs, { prompt = "Grep in" }, M.on_choice_grep)
+end
+
+M.select_interesting_dir_and_cd = function()
+    local dirs = M.interesting_dirs()
+    vim.ui.select(dirs, { prompt = "Change directory to" }, M.on_choice_cd)
 end
 
 M.select_and_run_linter = function()
